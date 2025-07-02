@@ -1,0 +1,65 @@
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: content-box;
+}
+li {
+    list-style: none
+}
+
+button {
+    /* 当我们鼠标经过button 按钮的时候，鼠标变成小手 */
+    cursor: pointer;
+}
+button,
+input {
+    border: 0;
+    outline: none;
+    /* "\5B8B\4F53" 就是宋体的意思 这样浏览器兼容性比较好 */
+    font-family: Microsoft YaHei, Heiti SC, tahoma, arial, Hiragino Sans GB, "\5B8B\4F53", sans-serif
+}
+body {
+    /* CSS3 抗锯齿形 让文字显示的更加清晰 */
+    -webkit-font-smoothing: antialiased;
+    background-color: #fff;
+    font: 12px/1.5 Microsoft YaHei, Heiti SC, tahoma, arial, Hiragino Sans GB, "\5B8B\4F53", sans-serif;
+}
+
+/* 清除浮动 */
+.clearfix:after {
+    visibility: hidden;
+    clear: both;
+    display: block;
+    content: ".";
+    height: 0
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+
+.m-header {
+  display: flex;
+  justify-content: space-between;
+  height: 50px;
+  border: 1px solid rgba(152, 152, 152, 0.6);
+  .title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 50px;
+    &:first-child {
+      color: #ff5019;
+      margin-left: 20px;
+    }
+    &:last-child {
+      margin-right: 20px;
+      font-size: 16px;
+      .total {
+        color: rgb(0, 61, 173);
+        font-size: 20px;
+      }
+    }
+  }
+}

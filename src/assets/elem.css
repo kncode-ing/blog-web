@@ -1,0 +1,14 @@
+/* 全局样式文件，根据实际引入路径调整 */
+/* 覆盖成功提示的背景、文字颜色等 */
+.el-message--success {
+  background-color: #ffffff !important;
+  color: #ff5019 !important;
+    border: 1px solid #ff5019 !important;
+  /* 还能修改圆角、内边距等，按需调整 */
+  border-radius: 4px !important;
+  padding: 12px !important; 
+}
+/* 覆盖消息提示的通用容器样式（如调整显示位置） */
+.el-message {
+  top: 100px !important; /* 默认是 20px，可改提示框距离顶部的距离 */
+}

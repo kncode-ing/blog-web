@@ -1,0 +1,89 @@
+.blog {
+  width: 100%;
+}
+.article {
+  border: 1px solid rgba(152, 152, 152, 0.6);
+  border-top: 0;
+}
+.article-item {
+  padding: 20px;
+  border-bottom: 1px solid rgba(152, 152, 152, 0.6);
+}
+.article-item:last-child {
+  border: 0;
+}
+.article-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+.article-content {
+  display: flex;
+  margin-top: 20px;
+  justify-content: space-around;
+}
+.article-content .cont {
+  width: 600px;
+  /* 固定宽度 */
+  height: 100px;
+  font-size: 14px;
+  color: #989898;
+  display: -webkit-box;
+  /* 必须结合的属性，将对象作为弹性伸缩盒子模型显示 */
+  -webkit-box-orient: vertical;
+  /* 设置或检索伸缩盒对象的子元素的排列方式 */
+  -webkit-line-clamp: 3;
+  /* 显示的最大行数 */
+  overflow: hidden;
+  /* 隐藏超出的内容 */
+  line-height: 1;
+  /* 行高，影响总高度计算 */
+  max-height: 4.5em;
+  /* 3行的总高度 = 行高 × 行数 */
+}
+.article-content img {
+  width: 150px;
+  height: 100px;
+}
+.article-detail {
+  padding-left: 50px;
+  margin-bottom: 20px;
+}
+.article-detail .aur {
+  float: left;
+  width: 25px;
+  height: 25px;
+  border-radius: 15px;
+  margin-right: 5px;
+}
+.article-detail .article-name {
+  float: left;
+  font-size: 15px;
+  line-height: 20px;
+  color: #ff5019;
+  margin-right: 20px;
+}
+.article-detail .article-time,
+.article-detail .article-watch {
+  float: left;
+  display: flex;
+  font-size: 15px;
+  color: #989898;
+  line-height: 20px;
+  margin-right: 20px;
+}
+.article-detail .article-time span,
+.article-detail .article-watch span {
+  margin-left: 5px;
+}
+.article-detail .article-type {
+  float: right;
+  margin-right: 300px;
+  border: 1px solid #ff5019;
+  padding: 3px;
+  color: #ff5019;
+}
+.none {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 20px;
+}
