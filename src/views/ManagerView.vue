@@ -4,6 +4,9 @@ import blogApi from "@/utils/api/blogApi";
 import typeApi from "@/utils/api/typeApi";
 import tagApi from "@/utils/api/tagApi";
 import userApi from "@/utils/api/userApi";
+// md转HTML  npm install markdown-it 安装md转HTML在组件中使用
+import MarkdownIt from "markdown-it";
+
 export default {
   name: "ManagerVue",
   components: {
@@ -39,6 +42,12 @@ export default {
       blogApi.getArticleList(this.searchModel).then((res) => {
         this.articleList = res.data.rows;
         this.total = res.data.total;
+        const arr = [...this.articleList];
+        const md = new MarkdownIt();
+        arr.forEach((item) => {
+          item.articleContent = md.render(item.articleContent);
+        });
+        this.articleList = arr;
       });
     },
     // 获取分类
@@ -55,6 +64,7 @@ export default {
         this.tagList = response.data;
       });
     },
+    //
     addT(name) {
       this.$prompt(`请输入${name}`, "提示", {
         confirmButtonText: "确定",
@@ -91,8 +101,26 @@ export default {
           });
         });
     },
+    async extractImagesFromMd(id) {
+      //  Markdown 图片语法：![alt](url)
+      const regex = /!\[.*?\]\((.*?)\)/g;
+      const images = [];
+      let match;
+      let obj = {};
+      let res = await blogApi.getArticleById(id);
+      obj = res.data;
+      while ((match = regex.exec(obj.articleContent)) !== null) {
+        const url = match[1]; // 提取图片链接
+        // 从 URL 中解析文件名（根据实际 URL 格式调整）
+        const filename = url.split("/").pop();
+        images.push(filename);
+      }
+      images.forEach(async (item) => {
+        await blogApi.deleteArticleImage(item);
+      });
+    },
     // 删除
-    delT(name, t, id) {
+    async delT(name, t, id) {
       if (id <= 6) {
         this.$message({
           type: "error",
@@ -100,6 +128,8 @@ export default {
         });
         return;
       }
+      await this.extractImagesFromMd(id);
+
       this.$confirm(`此操作将永久删除${t}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -130,6 +160,23 @@ export default {
             message: "已取消删除",
           });
         });
+    },
+    // 分页
+    handleSizeChange(pageSize) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+      this.searchModel.pageSize = pageSize;
+      this.getArticleList();
+    },
+    handleCurrentChange(pageNo) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+      this.searchModel.pageNo = pageNo;
+      this.getArticleList();
     },
   },
   mounted() {
@@ -199,7 +246,7 @@ export default {
             <div class="m-blog">
               <span class="article-title">{{ item.articleTitle }}</span>
               <div class="article-content clearfix">
-                <p>{{ item.articleContent }}</p>
+                <div v-html="item.articleContent" class="cont"></div>
                 <img
                   :src="'http://localhost:9999/image/' + item.articlePicture"
                   class="article-img"
@@ -219,11 +266,11 @@ export default {
                   <span class="article-name">{{ user.userUsername }}</span>
                 </div>
                 <div class="article-time">
-                  <img src="../../public/static/riqi.png" alt="" />
+                  <img src="../../public/static/riqi.png" />
                   <span>{{ item.articleTime }}</span>
                 </div>
                 <div class="article-watch">
-                  <img src="../../public/static/chakan.png" alt="" />
+                  <img src="../../public/static/chakan.png" />
                   <span>{{ item.articleWatch }}</span>
                 </div>
                 <span class="article-type">{{ item.articleType }}</span>
@@ -248,6 +295,18 @@ export default {
           </li>
         </ul>
       </div>
+      <el-pagination
+        class="page"
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="searchModel.pageNo"
+        :page-sizes="[5, 10, 20, 50]"
+        :page-size="searchModel.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
       <div v-if="!total" class="none">暂无博客</div>
     </div>
   </div>
@@ -301,5 +360,8 @@ export default {
       margin-left: 20px;
     }
   }
+}
+.page {
+  margin: 20px 180px 0 180px;
 }
 </style>

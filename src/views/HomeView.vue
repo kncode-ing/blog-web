@@ -7,8 +7,7 @@ import typeApi from "@/utils/api/typeApi";
 import tagApi from "@/utils/api/tagApi";
 // md转HTML  npm install markdown-it 安装md转HTML在组件中使用
 import MarkdownIt from "markdown-it";
-// npm install github-markdown-css 安装md样式
-import "github-markdown-css/github-markdown.css";
+
 export default {
   name: "HomeVue",
   components: {
@@ -121,10 +120,18 @@ export default {
     },
     // 分页
     handleSizeChange(pageSize) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
       this.searchModel.pageSize = pageSize;
       this.getArticleList();
     },
     handleCurrentChange(pageNo) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
       this.searchModel.pageNo = pageNo;
       this.getArticleList();
     },

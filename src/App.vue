@@ -24,6 +24,13 @@ export default {
       // localStorage.setItem("search", this.searchText);
       this.sText = "";
     },
+    //
+    toUp() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    },
   },
 };
 </script>
@@ -60,7 +67,13 @@ export default {
             placeholder="请输入"
             v-model="sText"
           />
-          <img src="../public/static/sousuo.png" alt="" @click="searchT" />
+          <i class="iconfont icon-sousuo1 ser" @click="searchT"></i>
+          <!-- <img
+            src="../public/static/sousuo.png"
+            alt="搜索"
+            @click="searchT"
+            class="ser"
+          /> -->
         </div>
       </div>
       <div class="user">
@@ -76,6 +89,7 @@ export default {
       <keep-alive exclude="DetailVue">
         <RouterView></RouterView>
       </keep-alive>
+      <i class="iconfont icon-zhiding up" @click="toUp"></i>
     </div>
 
     <!-- 底部 -->
@@ -148,13 +162,12 @@ a {
       border: 1px solid white;
     }
   }
-  img {
+  .ser {
     position: absolute;
-    width: 30px;
-    height: 30px;
-    top: 11px;
+    top: 15px;
     left: 85%;
     cursor: pointer;
+    color: #ff5019;
   }
 }
 // 活动导航栏
@@ -189,5 +202,23 @@ a {
 .main-content {
   width: 1200px;
   margin: 100px auto;
+}
+.up {
+  position: fixed;
+  top: 700px;
+  right: 150px;
+  border: 1px solid #ff5019;
+  border-radius: 15px;
+  padding: 10px;
+  color: #ff5019;
+  cursor: pointer;
+  z-index: 999;
+  &:hover {
+    background-color: #ff5019;
+    color: white;
+  }
+  &:active {
+    color: black;
+  }
 }
 </style>

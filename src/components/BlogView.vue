@@ -1,5 +1,7 @@
 <script>
 import userApi from "@/utils/api/userApi";
+// npm install github-markdown-css 安装md样式
+import "github-markdown-css/github-markdown.css";
 
 export default {
   name: "blogView",
@@ -56,7 +58,10 @@ export default {
           <span class="article-title">{{ item.articleTitle }}</span>
           <div class="article-content clearfix">
             <!-- 正文 -->
-            <div v-html="item.articleContent" class="cont"></div>
+            <div class="markdown-body">
+              <div v-html="item.articleContent" class="cont"></div>
+            </div>
+
             <!--  -->
             <img
               :src="'http://localhost:9999/image/' + item.articlePicture"

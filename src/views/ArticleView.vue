@@ -85,10 +85,18 @@ export default {
     handleSizeChange(pageSize) {
       this.searchModel.pageSize = pageSize;
       this.getArticleList();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     },
     handleCurrentChange(pageNo) {
       this.searchModel.pageNo = pageNo;
       this.getArticleList();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     },
   },
 };

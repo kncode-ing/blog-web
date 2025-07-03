@@ -2,6 +2,7 @@ import './assets/base.css'
 // import $ from 'jquery' 
 import 'semantic-ui-css/semantic.min.css';
 import './assets/elem.css'
+import './assets/icon.css'
 // import 'semantic-ui-css/semantic.min.js' 
 // window.$ = $ 
 // window.jQuery = $ 

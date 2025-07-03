@@ -4,6 +4,9 @@ import MarkdownIt from "markdown-it";
 import blogApi from "@/utils/api/blogApi";
 import comApi from "@/utils/api/comApi";
 import userApi from "@/utils/api/userApi";
+// npm install github-markdown-css 安装md样式
+import "github-markdown-css/github-markdown.css";
+
 export default {
   name: "DetailVue",
   data() {
@@ -89,6 +92,7 @@ export default {
           message: res.message,
           type: "success",
         });
+        this.getCom();
       });
     },
     // 分页
@@ -154,7 +158,7 @@ export default {
           <sui-header-content>{{ article.articleTitle }}</sui-header-content>
         </h2>
         <!-- 内容 -->
-        <div class="m-content">
+        <div class="markdown-body m-content">
           <div class="markdown-content" v-html="renderedContent"></div>
         </div>
         <!-- 标签 -->
@@ -281,7 +285,7 @@ export default {
         </h2>
       </sui-segment>
       <!-- 发布评论 -->
-      <sui-segment color="orange">
+      <sui-segment color="orange" v-show="article.articleIscomment">
         <sui-segments>
           <sui-segment>
             <sui-form>
@@ -290,7 +294,9 @@ export default {
                 <textarea v-model="commentContent"></textarea>
               </sui-form-field>
               <sui-form-field>
-                <sui-button class="orange" @click="submitCom">发布</sui-button>
+                <sui-button type="button" class="orange" @click="submitCom"
+                  >发布</sui-button
+                >
               </sui-form-field>
               <!-- <sui-form-fields inline>
                 <sui-form-field inline width="five">

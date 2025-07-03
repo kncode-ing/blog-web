@@ -10,8 +10,10 @@ export default {
       article: {},
       typeList: [],
       tagList: [],
-      titleError: false, //标题验证
-      contentError: false, //正文验证
+      tempFile: [], //临时存储上传的图片
+      fileUrl: [], //存储上传的图片链接
+      // titleError: false, //标题验证
+      // contentError: false, //正文验证
       articleTitle: "", //文章标题
       articleContent: "", //文章内容
       currentTitle: "原创", //原创标题
@@ -85,6 +87,8 @@ export default {
     },
     // 清空
     clearData() {
+      console.log(this.$refs.md);
+      console.log(this.$refs.md.$editor);
       (this.articleTitle = " "), //文章标题
         (this.articleContent = " "), //文章内容
         (this.currentTitle = "原创"), //原创标题
@@ -92,6 +96,8 @@ export default {
         (this.currentTag = null), //标签
         (this.articlePic = ""), //图片
         (this.articleDescription = ""); //转载说明
+      this.fileUrl = [];
+      this.tempFile = [];
     },
     //修改
     updataTypeTag() {
@@ -123,16 +129,24 @@ export default {
       });
     },
     //发布
-    submitArticle() {
+    async submitArticle() {
       // 校验标题是否有值
       if (!this.articleTitle.trim()) {
         // 标题为空，提示用户
-        this.titleError = true;
+        // this.titleError = true;
+        this.$message({
+          type: "error",
+          message: "请输入文章标题！！！",
+        });
         return;
       }
       // 校验内容是否有值
       if (!this.articleContent.trim()) {
-        this.contentError = true;
+        // this.contentError = true;
+        this.$message({
+          type: "error",
+          message: "请输入文章内容！！！",
+        });
         return;
       }
       // 校验主图是否有值
@@ -143,6 +157,8 @@ export default {
         });
         return;
       }
+
+      await this.upAllImage();
       this.createArticle();
       blogApi
         .submitArticle(this.article)
@@ -184,36 +200,50 @@ export default {
       this.loading = false;
       console.log(this.articlePic);
     },
-    // 文章图片删除
+    // 图片删除暂存
     delImage(file) {
-      try {
-        blogApi.deleteArticleImage(file[0].slice(28));
-      } catch (error) {
-        this.$message({
-          type: "error",
-          message: "图片删除失败",
-        });
-      }
+      this.tempFile.forEach((item, index) => {
+        if (item.id === file[0]) {
+          this.tempFile.splice(index, 1);
+        }
+      });
+
+      // try {
+      //   blogApi.deleteArticleImage(file[0].slice(28));
+      // } catch (error) {
+      //   this.$message({
+      //     type: "error",
+      //     message: "图片删除失败",
+      //   });
+      // }
     },
 
-    // 文章图片上传
-    async uploadImage(index, file) {
+    // 图片上传暂存
+    uploadImage(index, file) {
       // 构建 FormData
       const formData = new FormData();
       formData.append("file", file);
 
-      try {
-        const res = await blogApi.uploadArticleImage(formData);
-        if (res.code === 20000) {
-          const imageUrl = `http://localhost:9999/image/${res.message}`;
-          this.$refs.md.$img2Url(index, imageUrl);
+      const obg = { id: index, file: formData };
+      this.tempFile.push(obg);
+    },
+    // 图片上传
+    async upAllImage() {
+      // 上传所有图片并替换链接（用 Promise.all 确保全部完成）
+      const uploadTasks = this.tempFile.map(async (item) => {
+        try {
+          const res = await blogApi.uploadArticleImage(item.file);
+          if (res.code === 20000) {
+            const imageUrl = `http://localhost:9999/image/${res.message}`;
+            // 调用编辑器方法替换链接
+            this.$refs.md.$img2Url(item.id, imageUrl);
+          }
+        } catch (error) {
+          this.$message({ type: "error", message: "图片上传失败" });
         }
-      } catch (error) {
-        this.$message({
-          type: "error",
-          message: "图片上传失败",
-        });
-      }
+      });
+      // 等待所有上传和替换完成
+      await Promise.all(uploadTasks);
     },
   },
   watch: {
@@ -239,7 +269,7 @@ export default {
 
 <template>
   <div class="ui container">
-    <form method="post" class="ui form" @submit.prevent="submitArticle">
+    <form method="post" class="ui form" @submit.prevent>
       <!-- 标题 -->
       <div class="field">
         <div class="ui left labeled input" id="my-dropdown">
@@ -257,9 +287,9 @@ export default {
             placeholder="请输入标题"
             v-model="articleTitle"
           />
-          <sui-label v-if="titleError" basic color="red" pointing="left"
+          <!-- <sui-label v-if="titleError" basic color="red" pointing="left"
             >请输入标题！！！</sui-label
-          >
+          > -->
         </div>
       </div>
       <!-- 正文 -->
@@ -271,13 +301,11 @@ export default {
           :subfield="true"
           :editable="true"
           :scrollStyle="true"
+          :autofocus="false"
           @imgDel="delImage"
           @imgAdd="uploadImage"
           style="height: 500px"
         />
-        <sui-label v-if="contentError" basic color="red" pointing
-          >请输入正文！！！</sui-label
-        >
       </div>
       <!-- 标签和分类 -->
       <div class="two fields">
@@ -286,6 +314,7 @@ export default {
           <div class="ui left labeled action input">
             <label class="ui compact orange basic label">分类</label>
             <sui-dropdown
+              style="z-index: 9999 !important"
               class="ui fluid selection dropdown"
               fluid
               placeholder="请选择分类"
@@ -306,6 +335,7 @@ export default {
               placeholder="请选择标签"
               :options="dropdownTag"
               v-model="currentTag"
+              style="z-index: 9999 !important"
             />
           </div>
         </div>
@@ -370,11 +400,16 @@ export default {
       </div>
       <!-- 保存按钮 -->
       <div class="ui right aligned container">
-        <!-- <sui-button color="grey" content="取消" />
+        <sui-button color="grey" content="取消" @click="clearData" />
 
-        <sui-button color="red" content="保存" /> -->
+        <!-- <sui-button color="red" content="保存" />  -->
 
-        <sui-button type="submit" color="orange" content="发布" />
+        <sui-button
+          type="submit"
+          color="orange"
+          content="发布"
+          @click="submitArticle"
+        />
       </div>
     </form>
   </div>
